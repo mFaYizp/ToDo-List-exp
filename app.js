@@ -3,20 +3,32 @@ const bodyParser = require("body-parser")
 
 const app = express()
 
-app.get("/", function(req,res){
-    var today = new Date()
-    var currentDay = today.getDay()
+app.set('view engine', 'ejs');
 
-    if(currentDay === 6 || currentDay === 0){
-        res.write("<h1>Yay it's the weekend</h1>")
-    }else{
-        res.write("<p>it's not the weekend</p>")
-        res.write("<h1>Boo! I have to work!</h1>")
-        res.send()
+var items = ["Buy Food","Cook Food","Eat Food"];
+
+app.use(bodyParser.urlencoded({extended: true}))
+
+app.get("/", function(req,res){
+    var today = new Date();
+
+    var options = {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
     }
+    var day = today.toLocaleDateString("en-US", options)
+    
+    res.render("list",{kindOfDay: day, newListItems: items})
+})
+
+app.post("/", function(req,res){
+    var item = req.body.newItem
+   items.push(item)
+    res.redirect("/")
+})
 
     
-})
 
 
 
